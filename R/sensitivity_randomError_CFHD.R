@@ -1,0 +1,443 @@
+#'
+#' Conduct sensitivity analysis based on random errors for Curve-Free Bayesian Design (CFBD)
+#'
+#' @description Conduct sensitivity analysis by adding random errors to the means of the Beta prior distributions to investigate the robustness of CFBD. The random errors follow uniform distribution from \code{lower} to \code{upper}.
+#'
+#' @usage sensitivity_analysis_re(pTox, pEff, error.T, error.E, var.ratio, var.ratio.E, target, T.max, E.min, n.min.mtd, n.max.mtd, n.min.int, n.max.int, n.cohort, n.sim, seed,
+#'                                alpha = 1, eta = 1, p1 = 0.1, p2 = 0.1, gain.A = 1, gain.AC = 1, phi = 1, lo = 1, q1 = 0.1, q2 = 0.1)
+#'
+#' @param pTox a list of true toxicity probabilities at all dose levels
+#' @param pEff a list of true efficacy probabilities at all dose levels
+#' @param error.T error size for toxicity rates; taken from -0.5 - 0.5
+#' @param error.E error size for efficacy rates; taken from -0.5 - 0.5
+#' @param var.ratio an equivalent no. of patients contained in the prior information, chosen such that prior.n.mtd * target is larger than but close to 1
+#' @param var.ratio.E an equivalent no. of patients contained in the prior information, chosen such that prior.n.beds * E.min is larger than but close to 1
+#' @param target the target toxicity rate
+#' @param T.max the absolute overly toxic, usually .05 above target
+#' @param E.min the minimum acceptable efficacy rate
+#' @param n.min.mtd the minimal sample size for MTD identification (phase Ia)
+#' @param n.max.mtd the maximal sample size for MTD identification (phase Ia)
+#' @param n.min.int the minimum sample size to stop a trial (phase Ia/Ib)
+#' @param n.max.int the maximum sample size to stop a trial (phase Ia/Ib)
+#' @param n.cohort size of a confirmation cohort per BED
+#' @param n.sim the total number of trials to be simulated
+#' @param seed the random seed for simulation
+#' @param alpha the weight of penalty of toxicity rate below target level; 1 is suggested
+#' @param eta the weight of penalty of toxicity rate above target level; 1 is suggested
+#' @param p1 the error rate for concluding inadmissible; .10 is suggested
+#' @param p2 the error rate for concluding admissible; .10 is suggested
+#' @param gain.A the weight of reward that a BED is selected correctly; 1 is suggested
+#' @param gain.AC the weight of reward that a non-BED is not selected correctly; 1 is suggested
+#' @param phi the weight for how much more efficacious P_{E,i} is than E.min; 1 is suggested
+#' @param lo the weight for how much less efficacious P_{E,i} is than E.min; 1 is suggested
+#' @param q1 the threshold of the posterior probability of a dose being acceptable; 0.1 is suggested
+#' @param q2 the threshold of the posterior probability of a dose being unacceptable ; 0.1 is suggested
+#'
+#' @return \code{getoc()} returns the operating characteristics of the CFBD design as a list,
+#'         including:
+#'         (1) \code{$percentFound}: the percentage of trials recommending BEDs
+#'         (2) \code{$percentCorrect}: within those trials recommending BEDs, the percentage of trials of which all recommended doses are truly admissible and acceptable
+#'         (3) \code{$percentSuccess}: within those trials recommending BEDs, the percentage of trials of which the sample pooled efficacy rate being above \code{E.min}
+#'         (4) \code{$percentToxicity}: the percentage of in-trial toxicities
+#'         (5) \code{$percentEfficacy}: the percentage of in-trial efficacies
+#'         (6) \code{$averageSampleSize}: the average sample size over all simulated trials
+#'         (7) \code{$percentMTD}: the selection percentages of MTD
+#'         (8) \code{$percentL}: the selection percentages of lower boundary of BEDs interval
+#'         (9) \code{$percentU}: the selection percentages of upper boundary of BEDs interval
+#'         (10) \code{$percentPatients}: patient allocation for all doses under CFBD
+#'
+#' @seealso Paper: Fan, S., Lee, B. L., & Lu, Y. (2020). A curve-free bayesian decision-theoretic design for phase Ia/Ib trials considering both safety and efficacy outcomes. \emph{Statistics in Biosciences}, 12(2), 146–166. \url{https://doi.org/10.1007/s12561-020-09272-5}
+#'
+#' @examples
+#' ## Conduct sensitivity analysis based on simulations involving random errors
+#' res <- sensitivity_analysis_re(lower = -0.1, upper = 0.1, p.true.tox = c(.1,.2), p.true.eff = c(.3,.4), prior.n.mtd = 4, prior.n.beds = 3, target = 0.3, T.max = 0.35, E.min = 0.4, n.min.mtd = 10, n.max.mtd = 30,
+#'                                n.min = 60, n.max = 100, n.c = 10, ntrial = 5000, seed = 6)
+#' @export
+
+sensitivity_randomError_CFHD <- function (pTox, pEff, error.T, error.E, var.ratio, var.ratio.E, target, T.max, E.min, n.min.mtd, n.max.mtd, n.min.int, n.max.int, confirmation_cohort, n.cohort, n.sim, seed,
+                                     alpha = 1, eta = 1, p1 = 0.1, p2 = 0.1, gain.A = 1, gain.AC = 1, phi = 1, lo = 1, q1 = 0.1, q2 = 0.1) {
+  
+  if (!require("zipfR")) {
+    install.packages("zipfR")
+    library(zipfR)
+  }
+  if (target < 0.05) {
+    stop("the target is too low!")
+  }
+  if (target > 0.6) {
+    stop("the target is too high!")
+  }
+  if (min(pTox) < 0 | max(pTox) > 1) {
+    stop("the true toxicity probabilities are not valid, need to be larger than 0 and less than 1")
+  }
+  if (min(pEff) < 0 | max(pEff) > 1) {
+    stop("the true efficacy probabilities are not valid, need to be larger than 0 and less than 1")
+  }
+  
+  set.seed(seed)
+  n.dose <- length(pTox)
+  
+  #--------------------
+  # initialize storage
+  #--------------------
+  sample.size <- numeric(n.sim)      # sample size for each simulation
+  is.BED      <- numeric(n.sim)      # finding a BED interval or not per simulation
+  BED.eff     <- numeric(n.sim)      # sample pooled eff rate of BED interval per simulation
+  LB.eff      <- numeric(n.sim)      # low bound of 95% 1-sided CI of pooled eff of BED per simulation
+  is.app      <- numeric(n.sim)      # LB.eff is above E.min or not per simulation
+  is.good     <- numeric(n.sim)      # BED.eff is above E.min or not per simulation
+  tot.assign  <- numeric(n.dose)     # total no. of patients assigned to each dose in all simulations
+  tot.start   <- numeric(n.dose)     # total no. of selections as starting dose in all simulation
+  tot.select  <- numeric(n.dose + 1) # total no. of selections as mtd in all simulations
+  tot.tox     <- numeric(n.dose)     # total no. of toxicities at each dose in all simulations
+  tot.eff     <- numeric(n.dose)     # total no. of efficacies at each dose in all simulations
+  
+  n.good <- 0 # no. of good BED recommendation in all simulations
+  n.BED  <- 0 # no. of concluding a BED interval in all simulations
+  n.app  <- 0 # no. of sample pooled eff of BED interval above E.min in all simulations
+  iL.all <- numeric(n.dose + 1)
+  iU.all <- numeric(n.dose + 1)
+  
+  #-------------------
+  # simulation begins
+  #-------------------
+  for (s in 1:n.sim) {
+    
+    # miss-specified prior mean and prior parameters for toxicity and efficacy rates
+    mu.E <- numeric(n.dose)
+    mu.T <- numeric(n.dose)
+    for (i in 1: n.dose) {
+      mu.E[i]<-pEff[i] * (1+runif(1,-1,1) * error.E)
+      mu.T[i]<-pTox[i] * (1+runif(1,-1,1) * error.T)
+    }
+    
+    a.pTox <- var.ratio.E * mu.E
+    b.pTox <- var.ratio.E * (1 - mu.E)
+    a.pEff <- var.ratio * mu.T
+    b.pEff <- var.ratio * (1 - mu.T)
+    
+    n.tox <- numeric(n.dose)
+    n.eff <- numeric(n.dose)
+    n.assign <- numeric(n.dose)
+    
+    # random escalation to find starting dose
+    # escalating from dose one until toxicity presents
+    
+    for (dose in 1:n.dose) {
+      # enroll one patient at this dose
+      sample.size[s] <- sample.size[s] + 1
+      tot.assign[dose] <- tot.assign[dose] + 1
+      n.assign[dose] <- n.assign[dose] + 1
+      
+      # generate the patient's responses  
+      is.tox <- runif(1) < pTox[dose]
+      is.eff <- runif(1) < pEff[dose]
+      
+      # update the real data: no. of efficacy, no. of toxicity at this dose
+      # update prior parameters of toxicity rate using WORKING data
+      
+      # if toxicity presents, this dose is the starting dose
+      # otherwise, move up to the next dose
+      
+      if (is.eff) n.eff[dose] <- n.eff[dose] + 1
+      
+      if (is.tox) {
+        tot.start[dose] <- tot.start[dose] + 1
+        n.tox[dose] <- n.tox[dose] + 1
+        a.pTox[dose:n.dose] <- a.pTox[dose:n.dose] + 1
+        break # starting dose is found, so quit the loop
+      } else
+        b.pTox[1:dose] <- b.pTox[1:dose] + 1
+    }
+    
+    # stage 1: finding mtd with a stopping rule 
+    osla <- findmtd(target, a.pTox, b.pTox, alpha, eta)
+    mtd <- osla$mtd
+    
+    repeat {
+      # enroll/apply FLW on at least n.min.mtd patients first
+      # stop trial for overly toxic or running out of patients for stage 1
+      if (sample.size[s] >= n.max.mtd) break
+      is.stop <- stopmtd(a.pTox, b.pTox, mtd, target, T.max, p1, p2)
+      if (sample.size[s] >= n.min.mtd && is.stop) break
+      
+      # continue trial
+      # assign one patient at the current mtd; update parameters at the dose
+      sample.size[s] <- sample.size[s] + 1
+      tot.assign[mtd] <- tot.assign[mtd] + 1
+      n.assign[mtd] <- n.assign[mtd] + 1
+      
+      # generate responses
+      is.tox <- runif(1) < pTox[mtd]
+      is.eff <- runif(1) < pEff[mtd]
+      
+      # update the real data: no. of efficacy, no. of toxicity at this dose
+      # update prior parameters of toxicity rate using WORKING data
+      
+      if (is.eff) n.eff[mtd] <- n.eff[mtd] + 1
+      
+      if (is.tox) {
+        n.tox[mtd] <- n.tox[mtd] + 1
+        a.pTox[mtd:n.dose] <- a.pTox[mtd:n.dose] + 1
+      } else b.pTox[1:mtd] <- b.pTox[1:mtd] + 1
+      
+      osla <- findmtd(target, a.pTox, b.pTox, alpha, eta)
+      mtd <- osla$mtd
+    }
+    
+    # update simulation parameters: no. of patients, toxicities, efficacies, and mtd selections
+    tot.tox <- tot.tox + n.tox
+    tot.eff <- tot.eff + n.eff
+    
+    if (is.stop == 2) { # no mtd, all overly toxic
+      tot.select[n.dose + 1] <- tot.select[n.dose + 1] + 1
+      #cat("all overly toxic, end trial \n")
+      next
+    }
+    
+    # stage 2: looking for BED with a stopping rule
+    # first examination of efficacy data
+    # update the prior parameter of pEff
+    
+    a.pEff <- var.ratio.E * pEff + n.eff
+    b.pEff <- var.ratio.E * (1 - pEff) + (n.assign - n.eff)
+    N <- cumsum(n.assign)
+    X <- cumsum(n.eff)
+    
+    interval <- findbeds_CFHD(mtd, n.eff, n.assign, a.pEff, b.pEff, E.min, gain.A, gain.AC, phi, lo)
+    iL<-interval[1]
+    iU<-interval[2]
+    
+    # repeat estimation of mtd (using REAL data) and interval until maximum sample size
+    # after n.min.int, we may stop early
+    # stop if all admissible doses are sufficiently unacceptable or if A is sufficiently acceptable
+    
+    while (sample.size[s] < n.max.int) {
+      # check for stopping first (Frequentist version)
+      is.stop.E<-0 # initial, no stop
+      if (sample.size[s] >= n.min.int){
+        if (iL != 0 & sum(n.assign[iL:iU]) > 10) { # If B* exists and the number of patients treated at dose levels in B* exceeds 10
+          # (1-alpha) Wilson Plus Four (upper-tailed) Confidence interval
+          p_hat = (sum(n.eff[iL:iU]) + 2)/(sum(n.assign[iL:iU]) + 4)
+          lower = p_hat - qnorm(0.95)*sqrt(p_hat*(1-p_hat)/(sum(n.assign[iL:iU]) + 4))
+          if (lower > E.min) {
+            is.stop.E <-1 # stop for sufficiently acceptable set A
+            is.BED[s] <-1 # find a BED interval in simulation s
+          }
+        }
+        else if (iL == 0 & all(n.assign[1:mtd] > 10)) {
+          # check if all admissible doses [1,mtd] are unacceptable
+          is.stop.0 <-0 # initial no. of unacceptable doses
+          for (i in 1: mtd){
+            p_hat = (n.eff[i] + 2)/(n.assign[i] + 4)
+            upper = p_hat + qnorm(0.95)*sqrt(p_hat*(1-p_hat)/(n.assign[i] + 4))
+            if (upper < E.min) # dose i is sufficiently unacceptable
+              is.stop.0 <- is.stop.0 + 1
+          }
+          if (is.stop.0 == mtd) is.stop.E <-1 # all doses are unacceptable, no BED, so stop the trial
+        }
+      }
+      if (is.stop.E==1) break # stop the trial
+      
+      # continue the trial 
+      # interval A exists, assign 1 patient in the interval and  around the boundaries
+      # assign 1 patient to [iL - 1, iU + 1] below mtd 
+      # dose.lst is the doses who will receive a patient
+      
+      if (iL == 0) dose.lst = c(1:mtd)
+      else dose.lst = c(max(1, iL - 1):min(mtd, iU + 1) )
+      # if (iL == iU) dose.lst <- iL else dose.lst <- c(iL, iU)
+      # if (iL > 1) dose.lst <- c(iL - 1, dose.lst)
+      # if (iU < mtd) dose.lst <- c(dose.lst, iU + 1)
+      
+      # assign 1 patient between (iL, iU)
+      # if (iU - iL > 1) {
+      #   if (iU - iL == 2) dose.lst <- c(dose.lst, iL + 1) else
+      #     dose.lst <- c(dose.lst, sample((iL + 1):(iU - 1), 1))
+      # }
+      
+      for (dose in dose.lst) {
+        # update simulation parameters
+        sample.size[s] <- sample.size[s] + 1
+        tot.assign[dose] <- tot.assign[dose] + 1
+        n.assign[dose] <- n.assign[dose] + 1
+        
+        # generate responses
+        is.tox <- runif(1) < pTox[dose]
+        is.eff <- runif(1) < pEff[dose]
+        
+        # update prior parameters of efficacy rates using REAL data
+        if (is.eff) {
+          tot.eff[dose] <- tot.eff[dose] + 1
+          n.eff[dose] <- n.eff[dose] + 1
+          a.pEff[dose] <- a.pEff[dose] + 1
+        } else b.pEff[dose] <- b.pEff[dose] +1
+        
+        # update prior parameters of toxicity rates using REAL data
+        if (is.tox) {
+          tot.tox[dose] <- tot.tox[dose] + 1
+          n.tox[dose] <- n.tox[dose] + 1
+          a.pTox[dose] <- a.pTox[dose] + 1
+        } else b.pTox[dose] <- b.pTox[dose] + 1
+      }
+      
+      # update mtd
+      osla <- findmtd(target, a.pTox, b.pTox, alpha, eta)
+      mtd <- osla$mtd
+      
+      # update interval
+      interval <- findbeds_CFHD(mtd, n.eff, n.assign, a.pEff, b.pEff, E.min, gain.A, gain.AC, phi, lo)
+      iL<-interval[1]
+      iU<-interval[2]
+    }
+    
+    # the end of the simulation s, update all simulation parameters
+    # if not stop early at stage two, need to decide if [iL,iU] is recommended
+    if (is.stop.E==0){
+      if (iL != 0) { # cannot reject the interval (not more than 0.9 to be unacceptable), recommend it
+        is.BED[s] <-1
+      }
+    }
+    
+    # if BED interval does not exist, mtd is finaled and updated
+    # if (is.BED[s]==0){
+    #   # update no. of selection as mtd
+    #   tot.select[mtd] <- tot.select[mtd] + 1
+    # }  
+    
+    # if BED interval is found, adding confirmation cohort with size n.cohort per BED
+    # this confirmation cohort is not included in locating BED interval
+    if  (confirmation_cohort == TRUE & is.BED[s]==1){
+      
+      sample.size[s] <- sample.size[s] + n.cohort*(iU-iL+1) # update total sample size
+      for (dose in iL:iU){
+        # each BED is assigned to n.cohort patients
+        tot.assign[dose] <- tot.assign[dose] + n.cohort
+        n.assign[dose] <- n.assign[dose] + n.cohort
+        for (i in 1: n.cohort){
+          #generate patient outcomes
+          is.tox <- runif(1) < pTox[dose]
+          is.eff <- runif(1) < pEff[dose]
+          # update the real data: no. of efficacy, no. of toxicity at this dose
+          # update prior parameters
+          if (is.eff) {
+            n.eff[dose] <- n.eff[dose] + 1
+            tot.eff[dose] <- tot.eff[dose] + 1
+            a.pEff[dose] <- a.pEff[dose] + 1
+          } else b.pEff[dose] <- b.pEff[dose] +1
+          
+          if (is.tox) {
+            n.tox[dose] <- n.tox[dose] + 1
+            tot.tox[dose] <- tot.tox[dose] + 1
+            a.pTox[dose] <- a.pTox[dose] + 1
+          } else b.pTox[dose] <- b.pTox[dose] + 1
+        }
+      }
+      # update mtd
+      osla <- findmtd(target, a.pTox, b.pTox, alpha, eta)
+      mtd <- osla$mtd
+      
+      # update no. of selection as mtd
+      tot.select[mtd] <- tot.select[mtd] + 1
+      
+      # update interval
+      interval <- findbeds_CFHD(mtd, n.eff, n.assign, a.pEff, b.pEff, E.min, gain.A, gain.AC, phi, lo)
+      iL<-interval[1]
+      iU<-interval[2]
+      
+      if (iL != 0) {
+        is.BED[s] <-1
+        
+        # update the no. of iL, iU, and good finding
+        iL.all[iL] <- iL.all[iL] + 1
+        iU.all[iU] <- iU.all[iU] + 1
+        
+        # checking for good recommendation
+        # if all doses in the interval are really admissible and acceptable, the interval is a good recommendation
+        if (max(pTox[iL:iU]) <= target && min(pEff[iL:iU]) >= E.min) n.good <- n.good + 1
+        
+        # calculate empirical estimate of pooled eff BED.eff
+        s.BED <- sum(n.assign[iL:iU]) # sample size at BEDs
+        p.BED <-sum(n.eff[iL:iU])/s.BED # sample pooled eff at BEDs
+        BED.eff[s] <- p.BED
+        if (BED.eff[s] >= E.min) is.good[s] <-1 # sample pooled eff above E.min
+        # calculate the low bound of (1-alpha) 1-sided CI of pooled eff
+        LB.eff[s] <-(p.BED-1.645*sqrt(p.BED*(1-p.BED)/s.BED)) # 1.645: Z critical value at alpha=5% level (95% 1-sided CI for pooled eff rate)
+        # checking if LB.eff above E.min
+        if (LB.eff[s] >= E.min) is.app[s] <- 1
+      }
+      else {
+        # update no. of selection as mtd
+        tot.select[mtd] <- tot.select[mtd] + 1
+        
+        iL.all[n.dose + 1] <- iL.all[n.dose + 1] + 1
+        iU.all[n.dose + 1] <- iU.all[n.dose + 1] + 1
+      }
+    }
+    
+    if (confirmation_cohort == FALSE) {
+      
+      # update no. of selection as mtd
+      tot.select[mtd] <- tot.select[mtd] + 1
+      
+      if (iL != 0) {
+        is.BED[s] <-1
+        
+        # update the no. of iL, iU, and good finding
+        iL.all[iL] <- iL.all[iL] + 1
+        iU.all[iU] <- iU.all[iU] + 1
+        
+        # checking for good recommendation
+        # if all doses in the interval are really admissible and acceptable, the interval is a good recommendation
+        if (max(pTox[iL:iU]) <= target && min(pEff[iL:iU]) >= E.min) n.good <- n.good + 1
+        
+        # calculate empirical estimate of pooled eff BED.eff
+        s.BED <- sum(n.assign[iL:iU]) # sample size at BEDs
+        p.BED <-sum(n.eff[iL:iU])/s.BED # sample pooled eff at BEDs
+        BED.eff[s] <- p.BED
+        if (BED.eff[s] >= E.min) is.good[s] <-1 # sample pooled eff above E.min
+        # calculate the low bound of (1-alpha) 1-sided CI of pooled eff
+        LB.eff[s] <-(p.BED-1.645*sqrt(p.BED*(1-p.BED)/s.BED)) # 1.645: Z critical value at alpha=5% level (95% 1-sided CI for pooled eff rate)
+        # checking if LB.eff above E.min
+        if (LB.eff[s] >= E.min) is.app[s] <- 1
+      }
+      else {
+        iL.all[n.dose + 1] <- iL.all[n.dose + 1] + 1
+        iU.all[n.dose + 1] <- iU.all[n.dose + 1] + 1
+      }
+      
+    }# end of confirmation cohort
+  }# end of simulation
+  
+  # Simulation Results
+  
+  n.BED <- sum(is.BED) # no. of finding BED in all simulations
+  n.app <- sum(is.app) # no. of approval BED (95% one-sided CI above E.min) in all simulations
+  
+  #-------------------
+  # summary statistics
+  #-------------------
+  n = mean(sample.size) # mean sample size
+  percentFound = round((n.BED / n.sim) * 100, digits = 1) # percent of conclusion of BED interval found
+  percentCorrect = round((n.good / n.BED) * 100, digits = 1) # percent that all recommended BEDs are acceptable given a BED interval is found 
+  percentSuccess = round((sum(is.good)/n.BED)*100, digits=1) # percent that pooled efficacy above E.min
+  percentTox = round(100 * sum(tot.tox)/ sum(tot.assign), digits = 1)
+  percentEff = round(100 * sum(tot.eff)/ sum(tot.assign), digits = 1)
+  percentMTD = round(100 * tot.select[1:n.dose] / n.sim, 1) # distribution of mtd recommendation
+  percentL = round((iL.all[1:n.dose] / n.sim) * 100, digits = 1) # distributions of low limit of target interval
+  percentU = round((iU.all[1:n.dose] / n.sim) * 100, digits = 1) # distributions of up limit of target interval
+  percentPatients = round(100 * tot.assign/ sum(tot.assign), digits = 1) # distributions of patients' assignment and their responses
+  
+  
+  return (list(n = n,
+               percentFound = percentFound,
+               percentCorrect = percentCorrect,
+               percentSuccess = percentSuccess,
+               percentTox= percentTox,
+               percentEff = percentEff,
+               percentMTD = percentMTD,
+               percentL = percentL,
+               percentU = percentU,
+               percentPatients = percentPatients))
+  
+}

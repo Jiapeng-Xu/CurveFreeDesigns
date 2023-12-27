@@ -3,8 +3,9 @@
 #'
 #' @description Obtain the operating characteristics of the CFBD design by simulation
 #'
-#' @usage get.oc(pTox, pEff, var.ratio, var.ratio.E, target, T.max, E.min, n.min.mtd, n.max.mtd, n.min.int, n.max.int, n.cohort, n.sim, seed,
-#'               alpha = 1, eta = 1, p1 = 0.1, p2 = 0.1, gain.A = 1, gain.AC = 1, phi = 1, lo = 1, q1 = 0.1, q2 = 0.1)
+#' @usage get_oc_CFBD(pTox, pEff, var.ratio, var.ratio.E, target, T.max, E.min, 
+#' n.min.mtd, n.max.mtd, n.min.int, n.max.int, n.cohort, n.sim, seed, alpha = 1, eta = 1,
+#' p1 = 0.1, p2 = 0.1, gain.A = 1, gain.AC = 1, phi = 1, lo = 1, q1 = 0.1, q2 = 0.1)
 #'
 #' @param pTox a list of true toxicity probabilities at all dose levels
 #' @param pEff a list of true efficacy probabilities at all dose levels
@@ -37,7 +38,7 @@
 #'          In phase Ib stage, we model the dose-efficacy curve using a step function while continuing to monitor the toxicity rates. 
 #'          At the end of phase Ib, if some doses are recommended as BEDs, a cohort of confirmation is recruited and assigned at these doses to improve the precision of estimates at these doses.
 #'
-#' @return \code{get_oc()} returns the operating characteristics of the CFBD design as a list,
+#' @return \code{get_oc_CFBD()} returns the operating characteristics of the CFBD design as a list,
 #'         including:
 #'         (1) \code{$percentFound}: the percentage of trials recommending BEDs
 #'         (2) \code{$percentCorrect}: within those trials recommending BEDs, the percentage of trials of which all recommended doses are truly admissible and acceptable
@@ -57,10 +58,7 @@
 
 get_oc_CFBD <- function (pTox, pEff, var.ratio, var.ratio.E, target, T.max, E.min, n.min.mtd, n.max.mtd, n.min.int, n.max.int, n.cohort, n.sim, seed,
                     alpha = 1, eta = 1, p1 = 0.1, p2 = 0.1, gain.A = 1, gain.AC = 1, phi = 1, lo = 1, q1 = 0.1, q2 = 0.1) {
-  if (!require("zipfR")) {
-    install.packages("zipfR")
-    library(zipfR)
-  }
+
   if (target < 0.05) {
     stop("the target is too low!")
   }

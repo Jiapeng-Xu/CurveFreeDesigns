@@ -3,10 +3,10 @@
 #'
 #' @description  Stop if (1) out of patients n = n_{max} or; (2) the current recommended dose is very likely to be the MTD or; (3) all doses are evidently too toxic. Use working data (see function workdata) instead of real data for small samples
 #'
-#' @usage stopmtd(mtd, n.tox, n.assign, p.tox, prior.n.mtd, target, T.max, p1 = 0.1, p2 = 0.1)
+#' @usage stopmtd(a.vec, b.vec, mtd, target, T.max, p1, p2)
 #'
-#' @param a.pTox parameter alpha for current prior distribution
-#' @param b.pTox parameter beta for current prior distribution
+#' @param a.vec parameter alpha for current prior distribution
+#' @param b.vec parameter beta for current prior distribution
 #' @param mtd the MTD candidate
 #' @param target the target toxicity level
 #' @param T.max the absolute overly toxic level, usually .05 above target
@@ -25,9 +25,6 @@
 #' @seealso Fan, S., Lee, B. L., & Lu, Y. (2020). A curve-free bayesian decision-theoretic design for phase Ia/Ib trials considering both safety and efficacy outcomes. \emph{Statistics in Biosciences}, 12(2), 146–166. \url{https://doi.org/10.1007/s12561-020-09272-5}
 #'          Fan SK, Lu Y, Wang YG. A simple Bayesian decision-theoretic design for dose-finding trials. \emph{Stat Med}, 2012 Dec 10;31(28):3719-30. doi: 10.1002/sim.5438. Epub 2012 Jul 5. PMID: 22763943. \url{https://doi.org/10.1002/sim.5438}
 #'
-#' @examples
-#' work <- workdata(c(1,1), c(2,3))
-#' stopmtd(2, work$tox, work$n, c(.1,.2), 4, .3, .35, .1, .1)
 #' @export
 
 stopmtd <- function(a.vec, b.vec, mtd, target, T.max, p1, p2) {

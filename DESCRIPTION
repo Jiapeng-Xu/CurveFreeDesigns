@@ -1,12 +1,14 @@
 Package: CurveFreeDesigns
-Title: What the Package Does (One Line, Title Case)
-Version: 0.0.0.9000
-Authors@R: 
-    person("First", "Last", , "first.last@example.com", role = c("aut", "cre"),
-           comment = c(ORCID = "YOUR-ORCID-ID"))
-Description: What the package does (one paragraph).
-License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
-    license
+Type: Package
+Title: Monotonic dose response and curve-free designs for phase I dose-finding trials
+Version: 0.1.0
+Date: 2023-12-26
+Author: Shenghuan Fan, Bee Leng Lee, Ying Lu, and Jiapeng Xu
+Maintainer: Jiapeng Xu <jx2427@columbia.edu>
+Description: This package is developed to perform simulation studies and sensitivity analysis for proposed Curve Free Designs. A web application is also provided for users to choose any customize parameters.
+Imports: dplyr, zipfR
+License: GPL-2
 Encoding: UTF-8
-Roxygen: list(markdown = TRUE)
+LazyData: true
+Repository: CRAN
 RoxygenNote: 7.2.1

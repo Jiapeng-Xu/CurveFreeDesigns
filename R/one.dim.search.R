@@ -11,7 +11,7 @@
 #' @param n a matrix containing the total number of patients of each dose level
 #' @param p a matrix containing the true DLT probability of each dose level
 #' @param t a matrix containing the number of DLT outcomes of each dose level
-#' @param t a matrix containing the rejection decision of each dose level
+#' @param r a matrix containing the rejection decision of each dose level
 #' @param i the current dose level of agent 1
 #' @param j the current dose level of agent 2
 #'

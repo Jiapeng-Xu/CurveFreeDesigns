@@ -3,7 +3,8 @@
 #'
 #' @description Obtain the operating characteristics of Curve-Free Design for Maximum Tolerated Dose in One-Agent Trials by simulation
 #'
-#' @usage get_oc_FLW(pTox, var.ratio, target, T.max, n.min.mtd, n.max.mtd, n.sim, seed, alpha = 1, eta = 1, p1 = 0.1, p2 = 0.1)
+#' @usage get_oc_FLW(pTox, var.ratio, target, T.max, n.min.mtd, n.max.mtd, 
+#' n.sim, seed, alpha = 1, eta = 1, p1 = 0.1, p2 = 0.1)
 #'
 #' @param pTox a list of true toxicity probabilities at all dose levels
 #' @param var.ratio an equivalent no. of patients contained in the prior information, chosen such that prior.n.mtd * target is larger than but close to 1
@@ -36,10 +37,7 @@
 
 
 get_oc_FLW <- function (pTox, var.ratio, target, T.max, n.min.mtd, n.max.mtd, n.sim, seed, alpha = 1, eta = 1, p1 = 0.1, p2 = 0.1) {
-  if (!require("zipfR")) {
-    install.packages("zipfR")
-    library(zipfR)
-  }
+
   if (target < 0.05) {
     stop("the target is too low!")
   }

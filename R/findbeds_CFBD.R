@@ -3,7 +3,7 @@
 #'
 #' @description  Find the intervals of biological efficacious doses (BEDs) based on prior information, current MTD, and current data. 
 #'
-#' @usage findbeds(mtd, n.eff, n.assign, a.pEff, b.pEff, E.min, gain.A, gain.AC, phi, lo)
+#' @usage findbeds_CFBD(mtd, n.eff, n.assign, a.pEff, b.pEff, E.min, gain.A, gain.AC, phi, lo)
 #'
 #' @param mtd the current maximum tolerated dose (MTD)
 #' @param n.eff a list of no. of efficacies at all dose levels
@@ -39,8 +39,8 @@ findbeds_CFBD <- function(mtd, n.eff, n.assign, a.pEff, b.pEff, E.min, gain.A, g
   Lik <-0
   for (i in 1:mtd){
     if (n.assign[i] > 0) # otherwise no data on dose i
-      Lik <- Lik + n.assign[i]*((gain.A-phi*E.min)*(1-Rbeta(E.min, a.pEff[i], b.pEff[i]))
-                                +phi*a.pEff[i]/(a.pEff[i]+b.pEff[i])*(1-Rbeta(E.min, a.pEff[i]+1, b.pEff[i])))
+      Lik <- Lik + n.assign[i]*((gain.A-phi*E.min)*(1-zipfR::Rbeta(E.min, a.pEff[i], b.pEff[i]))
+                                +phi*a.pEff[i]/(a.pEff[i]+b.pEff[i])*(1-zipfR::Rbeta(E.min, a.pEff[i]+1, b.pEff[i])))
   }
   
   if (Lik > max.Lik) {
@@ -50,7 +50,7 @@ findbeds_CFBD <- function(mtd, n.eff, n.assign, a.pEff, b.pEff, E.min, gain.A, g
   }
   
   if (mtd == 1) { # can only be one piece
-    p.best <- 1-Rbeta(E.min,a.pEff[1], b.pEff[1]) # Pr[[1,1] is acceptable]
+    p.best <- 1-zipfR::Rbeta(E.min,a.pEff[1], b.pEff[1]) # Pr[[1,1] is acceptable]
     return(c(iL, iU, p.best)) 
   }
   
@@ -65,14 +65,14 @@ findbeds_CFBD <- function(mtd, n.eff, n.assign, a.pEff, b.pEff, E.min, gain.A, g
     # in set A = [a=1,b]
     for (i in a:b){
       if (n.assign[i] > 0) # otherwise no data on dose i
-        Lik <- Lik + n.assign[i]*((gain.A-phi*E.min)*(1-Rbeta(E.min, a.pEff[i], b.pEff[i]))
-                                  +phi*a.pEff[i]/(a.pEff[i]+b.pEff[i])*(1-Rbeta(E.min, a.pEff[i]+1, b.pEff[i])))
+        Lik <- Lik + n.assign[i]*((gain.A-phi*E.min)*(1-zipfR::Rbeta(E.min, a.pEff[i], b.pEff[i]))
+                                  +phi*a.pEff[i]/(a.pEff[i]+b.pEff[i])*(1-zipfR::Rbeta(E.min, a.pEff[i]+1, b.pEff[i])))
     }
     # in set AC = [b+1,mtd]
     for (i in (b+1):mtd){
       if (n.assign[i] > 0) # otherwise no data on dose i
-        Lik <- Lik + n.assign[i]*((gain.AC+lo*E.min)*(Rbeta(E.min, a.pEff[i], b.pEff[i]))
-                                  -lo*a.pEff[i]/(a.pEff[i]+b.pEff[i])*(Rbeta(E.min, a.pEff[i]+1, b.pEff[i])))
+        Lik <- Lik + n.assign[i]*((gain.AC+lo*E.min)*(zipfR::Rbeta(E.min, a.pEff[i], b.pEff[i]))
+                                  -lo*a.pEff[i]/(a.pEff[i]+b.pEff[i])*(zipfR::Rbeta(E.min, a.pEff[i]+1, b.pEff[i])))
     }
     
     if (Lik > max.Lik) {
@@ -93,15 +93,15 @@ findbeds_CFBD <- function(mtd, n.eff, n.assign, a.pEff, b.pEff, E.min, gain.A, g
     # in set A = [a, b=mtd]
     for (i in a:b){
       if (n.assign[i] > 0) # otherwise no data on dose i
-        Lik <- Lik + n.assign[i]*((gain.A-phi*E.min)*(1-Rbeta(E.min, a.pEff[i], b.pEff[i]))
-                                  +phi*a.pEff[i]/(a.pEff[i]+b.pEff[i])*(1-Rbeta(E.min, a.pEff[i]+1, b.pEff[i])))
+        Lik <- Lik + n.assign[i]*((gain.A-phi*E.min)*(1-zipfR::Rbeta(E.min, a.pEff[i], b.pEff[i]))
+                                  +phi*a.pEff[i]/(a.pEff[i]+b.pEff[i])*(1-zipfR::Rbeta(E.min, a.pEff[i]+1, b.pEff[i])))
     }
     
     # in set AC = [1, a-1]
     for (i in 1:(a-1)){
       if (n.assign[i] > 0) # otherwise no data on dose i
-        Lik <- Lik + n.assign[i]*((gain.AC+lo*E.min)*(Rbeta(E.min, a.pEff[i], b.pEff[i]))
-                                  -lo*a.pEff[i]/(a.pEff[i]+b.pEff[i])*(Rbeta(E.min, a.pEff[i]+1, b.pEff[i])))
+        Lik <- Lik + n.assign[i]*((gain.AC+lo*E.min)*(zipfR::Rbeta(E.min, a.pEff[i], b.pEff[i]))
+                                  -lo*a.pEff[i]/(a.pEff[i]+b.pEff[i])*(zipfR::Rbeta(E.min, a.pEff[i]+1, b.pEff[i])))
     }
     
     if (Lik > max.Lik) {
@@ -115,11 +115,11 @@ findbeds_CFBD <- function(mtd, n.eff, n.assign, a.pEff, b.pEff, E.min, gain.A, g
     # find best acceptable subset B now
     iL.B <- iL
     iU.B <- iU
-    p.best <- 1-Rbeta(E.min,sum(a.pEff[iL:iU]), sum(b.pEff[iL:iU])) # Pr[[iL,iU] is acceptable]
+    p.best <- 1-zipfR::Rbeta(E.min,sum(a.pEff[iL:iU]), sum(b.pEff[iL:iU])) # Pr[[iL,iU] is acceptable]
     
     for (c in iL:iU){
       for (d in c: iU){
-        p.B <-1-Rbeta(E.min,sum(a.pEff[c:d]), sum(b.pEff[c:d]))
+        p.B <-1-zipfR::Rbeta(E.min,sum(a.pEff[c:d]), sum(b.pEff[c:d]))
         if (p.B > p.best){
           iL.B <- c
           iU.B <- d
@@ -141,21 +141,21 @@ findbeds_CFBD <- function(mtd, n.eff, n.assign, a.pEff, b.pEff, E.min, gain.A, g
       # in set A = [a, b=mtd]
       for (i in a:b){
         if (n.assign[i] > 0) # otherwise no data on dose i
-          Lik <- Lik + n.assign[i]*((gain.A-phi*E.min)*(1-Rbeta(E.min, a.pEff[i], b.pEff[i]))
-                                    +phi*a.pEff[i]/(a.pEff[i]+b.pEff[i])*(1-Rbeta(E.min, a.pEff[i]+1, b.pEff[i])))
+          Lik <- Lik + n.assign[i]*((gain.A-phi*E.min)*(1-zipfR::Rbeta(E.min, a.pEff[i], b.pEff[i]))
+                                    +phi*a.pEff[i]/(a.pEff[i]+b.pEff[i])*(1-zipfR::Rbeta(E.min, a.pEff[i]+1, b.pEff[i])))
       }
       
       # in set AC = [1, a-1] & [b+1, mtd]
       for (i in 1:(a-1)){
         if (n.assign[i] > 0) # otherwise no data on dose i
-          Lik <- Lik + n.assign[i]*((gain.AC+lo*E.min)*(Rbeta(E.min, a.pEff[i], b.pEff[i]))
-                                    -lo*a.pEff[i]/(a.pEff[i]+b.pEff[i])*(Rbeta(E.min, a.pEff[i]+1, b.pEff[i])))
+          Lik <- Lik + n.assign[i]*((gain.AC+lo*E.min)*(zipfR::Rbeta(E.min, a.pEff[i], b.pEff[i]))
+                                    -lo*a.pEff[i]/(a.pEff[i]+b.pEff[i])*(zipfR::Rbeta(E.min, a.pEff[i]+1, b.pEff[i])))
       }
       
       for (i in (b+1):mtd){
         if (n.assign[i] > 0) # otherwise no data on dose i
-          Lik <- Lik + n.assign[i]*((gain.AC+lo*E.min)*(Rbeta(E.min, a.pEff[i], b.pEff[i]))
-                                    -lo*a.pEff[i]/(a.pEff[i]+b.pEff[i])*(Rbeta(E.min, a.pEff[i]+1, b.pEff[i])))
+          Lik <- Lik + n.assign[i]*((gain.AC+lo*E.min)*(zipfR::Rbeta(E.min, a.pEff[i], b.pEff[i]))
+                                    -lo*a.pEff[i]/(a.pEff[i]+b.pEff[i])*(zipfR::Rbeta(E.min, a.pEff[i]+1, b.pEff[i])))
       }
       
       if (Lik > max.Lik) {
@@ -167,11 +167,11 @@ findbeds_CFBD <- function(mtd, n.eff, n.assign, a.pEff, b.pEff, E.min, gain.A, g
   }
   iL.B <- iL
   iU.B <- iU
-  p.best <- 1-Rbeta(E.min,sum(a.pEff[iL:iU]), sum(b.pEff[iL:iU])) # Pr[[iL,iU] is acceptable]
+  p.best <- 1-zipfR::Rbeta(E.min,sum(a.pEff[iL:iU]), sum(b.pEff[iL:iU])) # Pr[[iL,iU] is acceptable]
   
   for (c in iL:iU){
     for (d in c: iU){
-      p.B <-1-Rbeta(E.min,sum(a.pEff[c:d]), sum(b.pEff[c:d]))
+      p.B <-1-zipfR::Rbeta(E.min,sum(a.pEff[c:d]), sum(b.pEff[c:d]))
       if (p.B > p.best){
         iL.B <- c
         iU.B <- d

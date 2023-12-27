@@ -4,7 +4,7 @@
 \alias{dose_escalation}
 \title{Decision about dose escalation based on the toxicities (Bayesian Decision-Theoretic Design)}
 \usage{
-findbeds(mtd, n.eff, n.assign, a.pEff, b.pEff, E.min, gain.A, gain.AC, phi, lo)
+dose_escalation(d, a.pTox, b.pTox, target, alpha, eta)
 }
 \arguments{
 \item{d}{the current dose combination}
@@ -12,6 +12,8 @@ findbeds(mtd, n.eff, n.assign, a.pEff, b.pEff, E.min, gain.A, gain.AC, phi, lo)
 \item{a.pTox}{parameter alpha for current prior distribution}
 
 \item{b.pTox}{parameter beta for current prior distribution}
+
+\item{target}{the target toxicity level}
 
 \item{alpha}{penalty term if the current DLT probability is below the target DLT probability}
 
@@ -25,8 +27,8 @@ Find the intervals of biological efficacious doses (BEDs) based on prior informa
 }
 \details{
 \code{dose_escalation()} calculate the values of utility function, the dose combination with greatest utility is the next dose allocation
-In this function, if the current dose combination is (r,s), next dose allocation is limited to dose combination (i,j) such that i <= r and j<= s, as well as the combinations (r+1,s) and (r,s+1).
+         In this function, if the current dose combination is (r,s), next dose allocation is limited to dose combination (i,j) such that i <= r and j<= s, as well as the combinations (r+1,s) and (r,s+1).
 }
 \seealso{
-Fan, S. K., Lee, B. L. and Lu, Y.: A Curve-free Bayesian Decision-theoretic Design for Phase Ia/Ib Trials Considering both Safety and Efficacy Outcomes. \emph{Statistics in Biosciences}, \textbf{12(2)}, 146-166 (2020). \url{https://doi.org/10.1007/s12561-020-09272-5}
+Fan, S. K., Lee, B. L. and Lu, Y.: A Curve-free Bayesian Decision-theoretic Design for Phase Ia/Ib Trials Considering both Safety and Efficacy Outcomes. Statistics in Biosciences, 12(2), 146-166 (2020). \url{https://doi.org/10.1007/s12561-020-09272-5}
 }

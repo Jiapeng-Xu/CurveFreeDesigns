@@ -3,8 +3,10 @@
 #'
 #' @description Obtain the operating characteristics of the CFHD design by simulation
 #'
-#' @usage get.oc(pTox, pEff, var.ratio, var.ratio.E, target, T.max, E.min, n.min.mtd, n.max.mtd, n.min.int, n.max.int, n.cohort, n.sim, seed,
-#'               alpha = 1, eta = 1, p1 = 0.1, p2 = 0.1, gain.A = 1, gain.AC = 1, phi = 1, lo = 1, q1 = 0.1, q2 = 0.1)
+#' @usage get_oc_CFHD(pTox, pEff, var.ratio, var.ratio.E, target, T.max, E.min, 
+#' n.min.mtd, n.max.mtd, n.min.int, n.max.int, confirmation_cohort, n.cohort, 
+#' n.sim, seed, alpha = 1, eta = 1, p1 = 0.1, p2 = 0.1, gain.A = 1, gain.AC = 1, 
+#' phi = 1, lo = 1, q1 = 0.1, q2 = 0.1)
 #'
 #' @param pTox a list of true toxicity probabilities at all dose levels
 #' @param pEff a list of true efficacy probabilities at all dose levels
@@ -17,6 +19,7 @@
 #' @param n.max.mtd the maximal sample size for MTD identification (phase Ia)
 #' @param n.min.int the minimum sample size to stop a trial (phase Ia/Ib)
 #' @param n.max.int the maximum sample size to stop a trial (phase Ia/Ib)
+#' @param confirmation_cohort a Boolean value indicating whether conbifrmation cohort shoule be enrolled; TRUE: Yes; FALSE: No
 #' @param n.cohort the size of a confirmation cohort per BED
 #' @param n.sim the total number of trials to be simulated
 #' @param seed the random seed for simulation
@@ -57,10 +60,7 @@
 
 get_oc_CFHD <- function (pTox, pEff, var.ratio, var.ratio.E, target, T.max, E.min, n.min.mtd, n.max.mtd, n.min.int, n.max.int, confirmation_cohort, n.cohort, n.sim, seed,
                          alpha = 1, eta = 1, p1 = 0.1, p2 = 0.1, gain.A = 1, gain.AC = 1, phi = 1, lo = 1, q1 = 0.1, q2 = 0.1) {
-  if (!require("zipfR")) {
-    install.packages("zipfR")
-    library(zipfR)
-  }
+
   if (target < 0.05) {
     stop("the target is too low")
   }

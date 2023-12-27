@@ -17,8 +17,8 @@ get_t.table(d, n_DLTs, p.conditional1, p.conditional2)
 }
 \value{
 \code{get_decision()} returns the result as a list,
-including:
-(1) \code{$t.table}: A matrix containing the number of DLT1, DLT2, and DLT3, respectively.
+        including:
+        (1) \code{$t.table}: A matrix containing the number of DLT1, DLT2, and DLT3, respectively.
 }
 \description{
 Return a table containing the number of DLT1, DLT2, and DLT3 based on the conditional probability specified by users

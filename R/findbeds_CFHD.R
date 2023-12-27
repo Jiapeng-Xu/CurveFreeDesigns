@@ -3,7 +3,7 @@
 #'
 #' @description  Find the intervals of biological efficacious doses (BEDs) based on prior information, current MTD, and current data. 
 #'
-#' @usage findbeds(mtd, n.eff, n.assign, a.pEff, b.pEff, E.min, gain.A, gain.AC, phi, lo)
+#' @usage findbeds_CFHD(mtd, n.eff, n.assign, a.pEff, b.pEff, E.min, gain.A, gain.AC, phi, lo)
 #'
 #' @param mtd the current maximum tolerated dose (MTD)
 #' @param n.eff a list of no. of efficacies at all dose levels

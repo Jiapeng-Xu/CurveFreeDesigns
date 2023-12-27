@@ -4,7 +4,8 @@
 \alias{get_oc_2agents_bayesian}
 \title{Generate operating characteristics for the Bayesian Decision-Theoretic Design}
 \usage{
-get_oc_2agents_bayesian(pTox, target, T.max, n.min, n.max, n.sim, seed, var.ratio = 4, alpha = 1.2, eta = 1, r1 = 0.5, r2 = 0.95, type = 1)
+get_oc_2agents_bayesian(pTox, target, T.max, n.min, n.max, 
+n.sim, seed, var.ratio = 4, alpha = 1.2, eta = 1, r1 = 0.5, r2 = 0.95, type = 1)
 }
 \arguments{
 \item{pTox}{a list of true toxicity probabilities at all dose levels}
@@ -35,13 +36,13 @@ get_oc_2agents_bayesian(pTox, target, T.max, n.min, n.max, n.sim, seed, var.rati
 }
 \value{
 \code{get_oc()} returns the operating characteristics of the CFBD design as a list,
-including:
-(1) \code{$n}: the average sample size over all simulated trials
-(2) \code{$selection_prop}: the selection percentages of each toxicity level
-(3) \code{$percentFound}: the percentage of trials recommending BEDs
-(5) \code{$percentTox}: the percentage of in-trial toxicities
-(6) \code{$percentMTD}: the selection percentages of each dose combination
-(7) \code{$percentPatients}: patient allocation for all doses under CFBD
+        including:
+        (1) \code{$n}: the average sample size over all simulated trials
+        (2) \code{$selection_prop}: the selection percentages of each toxicity level
+        (3) \code{$percentFound}: the percentage of trials recommending BEDs
+        (5) \code{$percentTox}: the percentage of in-trial toxicities
+        (6) \code{$percentMTD}: the selection percentages of each dose combination
+        (7) \code{$percentPatients}: patient allocation for all doses under CFBD
 }
 \description{
 Obtain the operating characteristics of the Bayesian Decision-Theoretic Design

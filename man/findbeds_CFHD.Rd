@@ -4,7 +4,7 @@
 \alias{findbeds_CFHD}
 \title{Find intervals of biological efficacious doses (BEDs) for CFHD}
 \usage{
-findbeds(mtd, n.eff, n.assign, a.pEff, b.pEff, E.min, gain.A, gain.AC, phi, lo)
+findbeds_CFHD(mtd, n.eff, n.assign, a.pEff, b.pEff, E.min, gain.A, gain.AC, phi, lo)
 }
 \arguments{
 \item{mtd}{the current maximum tolerated dose (MTD)}
@@ -35,9 +35,9 @@ Find the intervals of biological efficacious doses (BEDs) based on prior informa
 }
 \details{
 \code{findbeds()} implement the following procedure:
-(1) find the interval with maximum utility A among all the possible intervals
-(2) find the subinterval B that maximizes the posterior probability
-In this function, only doses at or below MTD are investigated and we use real data rather than working data to address the BED interval.
+         (1) find the interval with maximum utility A among all the possible intervals
+         (2) find the subinterval B that maximizes the posterior probability
+         In this function, only doses at or below MTD are investigated and we use real data rather than working data to address the BED interval.
 }
 \seealso{
 Fan, S., Lee, B. L., & Lu, Y. (2020). A curve-free bayesian decision-theoretic design for phase Ia/Ib trials considering both safety and efficacy outcomes. \emph{Statistics in Biosciences}, 12(2), 146–166. \url{https://doi.org/10.1007/s12561-020-09272-5}

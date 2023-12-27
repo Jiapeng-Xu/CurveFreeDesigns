@@ -33,11 +33,11 @@ get_decision(d, p.true, p.conditional1, p.conditional2, A, B, C, a.E, a.D, b.E, 
 }
 \value{
 \code{get_decision()} returns the result as a list,
-including:
-(1) \code{$flag.accepted}: A Boolean value indicating whether the current dose combination should be accepted
-(2) \code{$t.table}: A matrix containing the number of DLT1, DLT2, and DLT3, respectively.
-(3) \code{$n.DLTs}: The number of DLTs happens during the test
-(4) \code{$n.patients}: The number of patients enrolled for the test
+        including:
+        (1) \code{$flag.accepted}: A Boolean value indicating whether the current dose combination should be accepted
+        (2) \code{$t.table}: A matrix containing the number of DLT1, DLT2, and DLT3, respectively.
+        (3) \code{$n.DLTs}: The number of DLTs happens during the test
+        (4) \code{$n.patients}: The number of patients enrolled for the test
 }
 \description{
 Perform A+B+C test for The Rule-Based Design for Agents with Non-Overlapping Dose-Limiting Toxicities

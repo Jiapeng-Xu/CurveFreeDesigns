@@ -3,8 +3,10 @@
 #'
 #' @description Conduct sensitivity analysis by adding random errors to the means of the Beta prior distributions to investigate the robustness of CFBD. The random errors follow uniform distribution from \code{lower} to \code{upper}.
 #'
-#' @usage sensitivity_analysis_re(pTox, pEff, error.T, error.E, var.ratio, var.ratio.E, target, T.max, E.min, n.min.mtd, n.max.mtd, n.min.int, n.max.int, n.cohort, n.sim, seed,
-#'                                alpha = 1, eta = 1, p1 = 0.1, p2 = 0.1, gain.A = 1, gain.AC = 1, phi = 1, lo = 1, q1 = 0.1, q2 = 0.1)
+#' @usage sensitivity_randomError_CFHD(pTox, pEff, error.T, error.E, var.ratio, 
+#' var.ratio.E, target, T.max, E.min, n.min.mtd, n.max.mtd, n.min.int, n.max.int, 
+#' confirmation_cohort, n.cohort, n.sim, seed, alpha = 1, eta = 1, p1 = 0.1, p2 = 0.1, 
+#' gain.A = 1, gain.AC = 1, phi = 1, lo = 1, q1 = 0.1, q2 = 0.1)
 #'
 #' @param pTox a list of true toxicity probabilities at all dose levels
 #' @param pEff a list of true efficacy probabilities at all dose levels
@@ -19,6 +21,7 @@
 #' @param n.max.mtd the maximal sample size for MTD identification (phase Ia)
 #' @param n.min.int the minimum sample size to stop a trial (phase Ia/Ib)
 #' @param n.max.int the maximum sample size to stop a trial (phase Ia/Ib)
+#' @param confirmation_cohort a Boolean value indicating whether conbifrmation cohort shoule be enrolled; TRUE: Yes; FALSE: No
 #' @param n.cohort size of a confirmation cohort per BED
 #' @param n.sim the total number of trials to be simulated
 #' @param seed the random seed for simulation
@@ -48,19 +51,11 @@
 #'
 #' @seealso Paper: Fan, S., Lee, B. L., & Lu, Y. (2020). A curve-free bayesian decision-theoretic design for phase Ia/Ib trials considering both safety and efficacy outcomes. \emph{Statistics in Biosciences}, 12(2), 146–166. \url{https://doi.org/10.1007/s12561-020-09272-5}
 #'
-#' @examples
-#' ## Conduct sensitivity analysis based on simulations involving random errors
-#' res <- sensitivity_analysis_re(lower = -0.1, upper = 0.1, p.true.tox = c(.1,.2), p.true.eff = c(.3,.4), prior.n.mtd = 4, prior.n.beds = 3, target = 0.3, T.max = 0.35, E.min = 0.4, n.min.mtd = 10, n.max.mtd = 30,
-#'                                n.min = 60, n.max = 100, n.c = 10, ntrial = 5000, seed = 6)
 #' @export
 
 sensitivity_randomError_CFHD <- function (pTox, pEff, error.T, error.E, var.ratio, var.ratio.E, target, T.max, E.min, n.min.mtd, n.max.mtd, n.min.int, n.max.int, confirmation_cohort, n.cohort, n.sim, seed,
                                      alpha = 1, eta = 1, p1 = 0.1, p2 = 0.1, gain.A = 1, gain.AC = 1, phi = 1, lo = 1, q1 = 0.1, q2 = 0.1) {
   
-  if (!require("zipfR")) {
-    install.packages("zipfR")
-    library(zipfR)
-  }
   if (target < 0.05) {
     stop("the target is too low!")
   }

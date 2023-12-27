@@ -3,7 +3,8 @@
 #'
 #' @description Conduct sensitivity analysis by adding random errors to the means of the Beta prior distributions to investigate the robustness of proposed design. The random errors follow uniform distribution from \code{lower} to \code{upper}.
 #'
-#' @usage sensitivity_randomError_FLW(pTox, error.T, var.ratio, target, T.max, n.min.mtd, n.max.mtd, n.sim, seed, alpha = 1, eta = 1, p1 = 0.1, p2 = 0.1)
+#' @usage sensitivity_randomError_FLW(pTox, error.T, var.ratio, target, T.max, 
+#' n.min.mtd, n.max.mtd, n.sim, seed, alpha = 1, eta = 1, p1 = 0.1, p2 = 0.1)
 #'
 #' @param pTox a list of true toxicity probabilities at all dose levels
 #' @param error.T error size for toxicity rates; taken from -0.5 - 0.5
@@ -35,10 +36,6 @@
 
 sensitivity_randomError_FLW <- function (pTox, error.T, var.ratio, target, T.max, n.min.mtd, n.max.mtd, n.sim, seed, alpha = 1, eta = 1, p1 = 0.1, p2 = 0.1) {
   
-  if (!require("zipfR")) {
-    install.packages("zipfR")
-    library(zipfR)
-  }
   if (target < 0.05) {
     stop("the target is too low!")
   }

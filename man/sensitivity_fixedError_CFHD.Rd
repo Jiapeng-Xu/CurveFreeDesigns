@@ -4,8 +4,10 @@
 \alias{sensitivity_fixedError_CFHD}
 \title{Conduct sensitivity analysis based on fixed errors for Curve-Free Bayesian Design (CFHD)}
 \usage{
-sensitivity_fixedError(pTox, mis_pTox, pEff, mis_pEff, var.ratio, var.ratio.E, target, T.max, E.min, n.min.mtd, n.max.mtd, n.min.int, n.max.int, n.cohort, n.sim, seed,
-                              alpha = 1, eta = 1, p1 = 0.1, p2 = 0.1, gain.A = 1, gain.AC = 1, phi = 1, lo = 1, q1 = 0.1, q2 = 0.1)
+sensitivity_fixedError_CFHD(pTox, mis_pTox, pEff, mis_pEff, var.ratio, 
+var.ratio.E, target, T.max, E.min, n.min.mtd, n.max.mtd, n.min.int, n.max.int, 
+confirmation_cohort, n.cohort, n.sim, seed, alpha = 1, eta = 1, p1 = 0.1, p2 = 0.1, 
+gain.A = 1, gain.AC = 1, phi = 1, lo = 1, q1 = 0.1, q2 = 0.1)
 }
 \arguments{
 \item{pTox}{a list of true toxicity probabilities at all dose levels}
@@ -33,6 +35,8 @@ sensitivity_fixedError(pTox, mis_pTox, pEff, mis_pEff, var.ratio, var.ratio.E, t
 \item{n.min.int}{the minimum sample size to stop a trial (phase Ia/Ib)}
 
 \item{n.max.int}{the maximum sample size to stop a trial (phase Ia/Ib)}
+
+\item{confirmation_cohort}{a Boolean value indicating whether conbifrmation cohort shoule be enrolled; TRUE: Yes; FALSE: No}
 
 \item{n.cohort}{the size of a confirmation cohort per BED}
 
@@ -62,26 +66,22 @@ sensitivity_fixedError(pTox, mis_pTox, pEff, mis_pEff, var.ratio, var.ratio.E, t
 }
 \value{
 \code{getoc()} returns the operating characteristics of the CFHD design as a list,
-including:
-(1) \code{$percentFound}: the percentage of trials recommending BEDs
-(2) \code{$percentCorrect}: within those trials recommending BEDs, the percentage of trials of which all recommended doses are truly admissible and acceptable
-(3) \code{$percentSuccess}: within those trials recommending BEDs, the percentage of trials of which the sample pooled efficacy rate being above \code{E.min}
-(4) \code{$percentToxicity}: the percentage of in-trial toxicities
-(5) \code{$percentEfficacy}: the percentage of in-trial efficacies
-(6) \code{$averageSampleSize}: the average sample size over all simulated trials
-(7) \code{$percentMTD}: the selection percentages of MTD
-(8) \code{$percentL}: the selection percentages of lower boundary of BEDs interval
-(9) \code{$percentU}: the selection percentages of upper boundary of BEDs interval
-(10) \code{$percentPatients}: patient allocation for all doses under CFHD
+        including:
+        (1) \code{$percentFound}: the percentage of trials recommending BEDs
+        (2) \code{$percentCorrect}: within those trials recommending BEDs, the percentage of trials of which all recommended doses are truly admissible and acceptable
+        (3) \code{$percentSuccess}: within those trials recommending BEDs, the percentage of trials of which the sample pooled efficacy rate being above \code{E.min}
+        (4) \code{$percentToxicity}: the percentage of in-trial toxicities
+        (5) \code{$percentEfficacy}: the percentage of in-trial efficacies
+        (6) \code{$averageSampleSize}: the average sample size over all simulated trials
+        (7) \code{$percentMTD}: the selection percentages of MTD
+        (8) \code{$percentL}: the selection percentages of lower boundary of BEDs interval
+        (9) \code{$percentU}: the selection percentages of upper boundary of BEDs interval
+        (10) \code{$percentPatients}: patient allocation for all doses under CFHD
 }
 \description{
 Conduct sensitivity analysis by adding fixed errors to the means of the Beta prior distributions to investigate the robustness of CFHD. The fixed errors are user-defined.
 }
-\examples{
-## Conduct sensitivity analysis based on simulations involving fixed errors
-res <- sensitivity_fixedError(p.true.tox = c(.1,.2), fixed.errors.tox = c(-0.05, 0.05), p.true.eff = c(.3,.4), fixed.errors.tox = c(-0.1, 0.1), prior.n.mtd = 4, prior.n.beds = 3, target = 0.3, T.max = 0.35, E.min = 0.4, n.min.mtd = 10, n.max.mtd = 30,
-                               n.min = 60, n.max = 100, n.c = 10, ntrial = 5000, seed = 6)
-}
 \seealso{
 Fan, S., Lee, B. L., & Lu, Y. (2020). A curve-free bayesian decision-theoretic design for phase Ia/Ib trials considering both safety and efficacy outcomes. \emph{Statistics in Biosciences}, 12(2), 146–166. \url{https://doi.org/10.1007/s12561-020-09272-5}
+                           n.min = 60, n.max = 100, n.c = 10, ntrial = 5000, seed = 6)
 }

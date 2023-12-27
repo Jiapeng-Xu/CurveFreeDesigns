@@ -4,7 +4,8 @@
 \alias{get_oc_2DLT}
 \title{Generate operating characteristics of The Rule-Based Design for Agents with Non-Overlapping Dose-Limiting Toxicities}
 \usage{
-get_oc_2DLT(p.true, p.conditional1, p.conditional2, A, B, C, a.E, a.D, b.E, b.D, c.E, ntrial = 50000, seed = NULL)
+get_oc_2DLT(p.true, p.conditional1, p.conditional2, 
+A, B, C, a.E, a.D, b.E, b.D, c.E, ntrial = 50000, seed = NULL)
 }
 \arguments{
 \item{p.true}{a list of true DLT rates at all dose combination levels}
@@ -35,11 +36,11 @@ get_oc_2DLT(p.true, p.conditional1, p.conditional2, A, B, C, a.E, a.D, b.E, b.D,
 }
 \value{
 \code{get_oc_2DLT()} returns the operating characteristics of the proposted design as a list,
-including:
-(1) \code{$selection_prop}: the selection percentages of each toxicity level
-(2) \code{$recommended_prop}: the selection percentages of each dose combination
-(3) \code{$nDLT_list}: a list of the number of DLT outcomes of each trial
-(4) \code{$nPatient_list}: a list of sample size of each trial
+        including:
+        (1) \code{$selection_prop}: the selection percentages of each toxicity level
+        (2) \code{$recommended_prop}: the selection percentages of each dose combination
+        (3) \code{$nDLT_list}: a list of the number of DLT outcomes of each trial
+        (4) \code{$nPatient_list}: a list of sample size of each trial
 }
 \description{
 Obtain the operating characteristics of The Rule-Based Design for Agents with Non-Overlapping Dose-Limiting Toxicities by simulating trials

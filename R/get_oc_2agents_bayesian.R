@@ -3,7 +3,8 @@
 #'
 #' @description Obtain the operating characteristics of the Bayesian Decision-Theoretic Design
 #'
-#' @usage get_oc_2agents_bayesian(pTox, target, T.max, n.min, n.max, n.sim, seed, var.ratio = 4, alpha = 1.2, eta = 1, r1 = 0.5, r2 = 0.95, type = 1)
+#' @usage get_oc_2agents_bayesian(pTox, target, T.max, n.min, n.max, 
+#' n.sim, seed, var.ratio = 4, alpha = 1.2, eta = 1, r1 = 0.5, r2 = 0.95, type = 1)
 #'
 #' @param pTox a list of true toxicity probabilities at all dose levels
 #' @param target the target toxicity level

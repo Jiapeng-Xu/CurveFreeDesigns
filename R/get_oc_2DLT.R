@@ -3,7 +3,8 @@
 #'
 #' @description Obtain the operating characteristics of The Rule-Based Design for Agents with Non-Overlapping Dose-Limiting Toxicities by simulating trials
 #'
-#' @usage get_oc_2DLT(p.true, p.conditional1, p.conditional2, A, B, C, a.E, a.D, b.E, b.D, c.E, ntrial = 50000, seed = NULL)
+#' @usage get_oc_2DLT(p.true, p.conditional1, p.conditional2, 
+#' A, B, C, a.E, a.D, b.E, b.D, c.E, ntrial = 50000, seed = NULL)
 #'
 #' @param p.true a list of true DLT rates at all dose combination levels
 #' @param p.conditional1 The conditional probability of observing only DLT1, given that at least one DLT occurs and that DLT3 is absent
@@ -32,11 +33,6 @@
 
 get_oc_2DLT <- function (p.true, p.conditional1, p.conditional2, A, B, C, a.E, a.D, b.E, b.D, c.E, ntrial = 50000, seed = NULL) {
   
-  if (!require(dplyr)) {
-    install.packages(dplyr)
-    library(dplyr)
-  }
-  
   set.seed(seed)
   n1_dose = nrow(p.true)
   n2_dose = ncol(p.true)
@@ -51,8 +47,8 @@ get_oc_2DLT <- function (p.true, p.conditional1, p.conditional2, A, B, C, a.E, a
     n.DLTs = 0
     n.patients = 0
     
-    while (between(d[1], 1, n1_dose) &
-           between(d[2], 1, n2_dose)) {
+    while (dplyr::between(d[1], 1, n1_dose) &
+           dplyr::between(d[2], 1, n2_dose)) {
       res = get_decision(d, p.true, p.conditional1, p.conditional2, A, B, C, a.E, a.D, b.E, b.D, c.E)
       n.DLTs = n.DLTs + res$n.DLTs
       n.patients = n.patients + res$n.patients

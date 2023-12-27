@@ -3,8 +3,10 @@
 #'
 #' @description Conduct sensitivity analysis by adding fixed errors to the means of the Beta prior distributions to investigate the robustness of CFBD. The fixed errors are user-defined.
 #'
-#' @usage sensitivity_fixedError(pTox, mis_pTox, pEff, mis_pEff, var.ratio, var.ratio.E, target, T.max, E.min, n.min.mtd, n.max.mtd, n.min.int, n.max.int, n.cohort, n.sim, seed,
-#'                               alpha = 1, eta = 1, p1 = 0.1, p2 = 0.1, gain.A = 1, gain.AC = 1, phi = 1, lo = 1, q1 = 0.1, q2 = 0.1)
+#' @usage sensitivity_fixedError_CFBD(pTox, mis_pTox, pEff, mis_pEff, 
+#' var.ratio, var.ratio.E, target, T.max, E.min, n.min.mtd, n.max.mtd, n.min.int, 
+#' n.max.int, n.cohort, n.sim, seed, alpha = 1, eta = 1, p1 = 0.1, p2 = 0.1, 
+#' gain.A = 1, gain.AC = 1, phi = 1, lo = 1, q1 = 0.1, q2 = 0.1)
 #'
 #' @param pTox a list of true toxicity probabilities at all dose levels
 #' @param mis_pTox a list of fixed errors to be added to the initial Beta mean toxicity rates
@@ -48,19 +50,11 @@
 #'
 #' @seealso Fan, S., Lee, B. L., & Lu, Y. (2020). A curve-free bayesian decision-theoretic design for phase Ia/Ib trials considering both safety and efficacy outcomes. \emph{Statistics in Biosciences}, 12(2), 146–166. \url{https://doi.org/10.1007/s12561-020-09272-5}
 #'
-#' @examples
-#' ## Conduct sensitivity analysis based on simulations involving fixed errors
-#' res <- sensitivity_fixedError(p.true.tox = c(.1,.2), fixed.errors.tox = c(-0.05, 0.05), p.true.eff = c(.3,.4), fixed.errors.tox = c(-0.1, 0.1), prior.n.mtd = 4, prior.n.beds = 3, target = 0.3, T.max = 0.35, E.min = 0.4, n.min.mtd = 10, n.max.mtd = 30,
-#'                                n.min = 60, n.max = 100, n.c = 10, ntrial = 5000, seed = 6)
 #' @export
 
 sensitivity_fixedError_CFBD <- function (pTox, mis_pTox, pEff, mis_pEff, var.ratio, var.ratio.E, target, T.max, E.min, n.min.mtd, n.max.mtd, n.min.int, n.max.int, n.cohort, n.sim, seed,
                                     alpha = 1, eta = 1, p1 = 0.1, p2 = 0.1, gain.A = 1, gain.AC = 1, phi = 1, lo = 1, q1 = 0.1, q2 = 0.1) {
 
-  if (!require("zipfR")) {
-    install.packages("zipfR")
-    library(zipfR)
-  }
   if (target < 0.05) {
     stop("the target is too low!")
   }

@@ -4,9 +4,13 @@
 \alias{stopmtd}
 \title{Terminate the phase Ia trial whenever the evidence for the current conclusion is considered sufficient}
 \usage{
-stopmtd(mtd, n.tox, n.assign, p.tox, prior.n.mtd, target, T.max, p1 = 0.1, p2 = 0.1)
+stopmtd(a.vec, b.vec, mtd, target, T.max, p1, p2)
 }
 \arguments{
+\item{a.vec}{parameter alpha for current prior distribution}
+
+\item{b.vec}{parameter beta for current prior distribution}
+
 \item{mtd}{the MTD candidate}
 
 \item{target}{the target toxicity level}
@@ -16,10 +20,6 @@ stopmtd(mtd, n.tox, n.assign, p.tox, prior.n.mtd, target, T.max, p1 = 0.1, p2 = 
 \item{p1}{the error rate for concluding inadmissible; .10 is suggested}
 
 \item{p2}{the error rate for concluding admissible; .10 is suggested}
-
-\item{a.pTox}{parameter alpha for current prior distribution}
-
-\item{b.pTox}{parameter beta for current prior distribution}
 }
 \value{
 \code{stopmtd()} returns (1) flag_stop: Boolean value indicating whether we should terminate the phase Ia trial and; (2) flag_mtd: Boolean value indicating whether we have sufficient evidence that the current MTD is the true MTD
@@ -29,17 +29,13 @@ Stop if (1) out of patients n = n_{max} or; (2) the current recommended dose is 
 }
 \details{
 \code{stopmtd()} performs the following stopping rule:
-(1) stop, if the current recommended dose is very likely to be the MTD:
-(a) if the current recommended dose is the highest dose: if the posterior probability of the current MTD being the true MTD exceeds a threshold, we conclude that the current MTD is the true MTD
-(b) if the current recommended dose is not the highest dose: if the posterior probability of the next higher dose being too toxic exceeds a threshold, we conclude that the current MTD is the true MTD
-(2) stop, if all doses are evidently too toxic:
-(a) if the posterior probability of the first dose being overly toxic exceeds a threshold, we conclude that the MTD is below the first dose
-}
-\examples{
-work <- workdata(c(1,1), c(2,3))
-stopmtd(2, work$tox, work$n, c(.1,.2), 4, .3, .35, .1, .1)
+         (1) stop, if the current recommended dose is very likely to be the MTD:
+             (a) if the current recommended dose is the highest dose: if the posterior probability of the current MTD being the true MTD exceeds a threshold, we conclude that the current MTD is the true MTD
+             (b) if the current recommended dose is not the highest dose: if the posterior probability of the next higher dose being too toxic exceeds a threshold, we conclude that the current MTD is the true MTD
+         (2) stop, if all doses are evidently too toxic:
+             (a) if the posterior probability of the first dose being overly toxic exceeds a threshold, we conclude that the MTD is below the first dose
 }
 \seealso{
 Fan, S., Lee, B. L., & Lu, Y. (2020). A curve-free bayesian decision-theoretic design for phase Ia/Ib trials considering both safety and efficacy outcomes. \emph{Statistics in Biosciences}, 12(2), 146–166. \url{https://doi.org/10.1007/s12561-020-09272-5}
-Fan SK, Lu Y, Wang YG. A simple Bayesian decision-theoretic design for dose-finding trials. \emph{Stat Med}, 2012 Dec 10;31(28):3719-30. doi: 10.1002/sim.5438. Epub 2012 Jul 5. PMID: 22763943. \url{https://doi.org/10.1002/sim.5438}
+         Fan SK, Lu Y, Wang YG. A simple Bayesian decision-theoretic design for dose-finding trials. \emph{Stat Med}, 2012 Dec 10;31(28):3719-30. doi: 10.1002/sim.5438. Epub 2012 Jul 5. PMID: 22763943. \url{https://doi.org/10.1002/sim.5438}
 }

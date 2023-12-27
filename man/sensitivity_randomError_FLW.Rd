@@ -4,7 +4,8 @@
 \alias{sensitivity_randomError_FLW}
 \title{Conduct sensitivity analysis of Curve-Free Design for Maximum Tolerated Dose in One-Agent Trials based on random errors}
 \usage{
-sensitivity_randomError_FLW(pTox, error.T, var.ratio, target, T.max, n.min.mtd, n.max.mtd, n.sim, seed, alpha = 1, eta = 1, p1 = 0.1, p2 = 0.1)
+sensitivity_randomError_FLW(pTox, error.T, var.ratio, target, T.max, 
+n.min.mtd, n.max.mtd, n.sim, seed, alpha = 1, eta = 1, p1 = 0.1, p2 = 0.1)
 }
 \arguments{
 \item{pTox}{a list of true toxicity probabilities at all dose levels}
@@ -35,13 +36,13 @@ sensitivity_randomError_FLW(pTox, error.T, var.ratio, target, T.max, n.min.mtd, 
 }
 \value{
 \code{sensitivity_randomError_FLW()} returns the operating characteristics of proposed design as a list,
-including:
-(1) \code{$n}: the average sample size over all simulated trials
-(2) \code{$percentFound}: the percentage of trials recommending BEDs
-(3) \code{$percentCorrect}: within those trials recommending BEDs, the percentage of trials of which all recommended doses are truly admissible and acceptable
-(4) \code{$percentTox}: the percentage of in-trial toxicities
-(5) \code{$percentMTD}: the selection percentages of MTD
-(6) \code{$percentPatients}: patient allocation for all doses under CFBD
+        including:
+        (1) \code{$n}: the average sample size over all simulated trials
+        (2) \code{$percentFound}: the percentage of trials recommending BEDs
+        (3) \code{$percentCorrect}: within those trials recommending BEDs, the percentage of trials of which all recommended doses are truly admissible and acceptable
+        (4) \code{$percentTox}: the percentage of in-trial toxicities
+        (5) \code{$percentMTD}: the selection percentages of MTD
+        (6) \code{$percentPatients}: patient allocation for all doses under CFBD
 }
 \description{
 Conduct sensitivity analysis by adding random errors to the means of the Beta prior distributions to investigate the robustness of proposed design. The random errors follow uniform distribution from \code{lower} to \code{upper}.

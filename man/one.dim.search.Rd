@@ -17,7 +17,9 @@ one.dim.search(p_hat, n1.dose, n2.dose, n, p, t, r, i, j)
 
 \item{p}{a matrix containing the true DLT probability of each dose level}
 
-\item{t}{a matrix containing the rejection decision of each dose level}
+\item{t}{a matrix containing the number of DLT outcomes of each dose level}
+
+\item{r}{a matrix containing the rejection decision of each dose level}
 
 \item{i}{the current dose level of agent 1}
 
@@ -25,9 +27,9 @@ one.dim.search(p_hat, n1.dose, n2.dose, n, p, t, r, i, j)
 }
 \value{
 \code{one.dim.search()} returns:
-(1) \code{$t}: a matrix containing the number of DLT outcomes of each dose level
-(2) \code{$n}: a matrix containing the total number of patients of each dose level
-(3) \code{$r}: a matrix containing the rejection decision of each dose level
+        (1) \code{$t}: a matrix containing the number of DLT outcomes of each dose level
+        (2) \code{$n}: a matrix containing the total number of patients of each dose level
+        (3) \code{$r}: a matrix containing the rejection decision of each dose level
 }
 \description{
 A recursion function that perform one dimensional test of the Rule-Based Design for Agents with Same Dose-Limiting Toxicities at dose combination (i,j), update the two-dimension isotonic estimation, and return the results

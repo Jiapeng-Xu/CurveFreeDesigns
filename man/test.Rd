@@ -17,15 +17,17 @@ test(n1.dose, n2.dose, n, p, t, r, k, l)
 
 \item{t}{a matrix containing the number of DLT outcomes of each dose level}
 
+\item{r}{a matrix containing the rejection decision of each dose level}
+
 \item{k}{the current dose level of agent 1}
 
 \item{l}{the current dose level of agent 2}
 }
 \value{
 \code{test()} returns:
-(1) \code{$t}: a matrix containing the number of DLT outcomes of each dose level
-(2) \code{$n}: a matrix containing the total number of patients of each dose level
-(3) \code{$r}: a matrix containing the rejection decision of each dose level
+        (1) \code{$t}: a matrix containing the number of DLT outcomes of each dose level
+        (2) \code{$n}: a matrix containing the total number of patients of each dose level
+        (3) \code{$r}: a matrix containing the rejection decision of each dose level
 }
 \description{
 Perform 2+1+3 test for the Rule-Based Design for Agents with Same Dose-Limiting Toxicities at dose combination (k,l), and return the results

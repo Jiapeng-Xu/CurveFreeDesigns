@@ -3,11 +3,12 @@
 #'
 #' @description  Find the intervals of biological efficacious doses (BEDs) based on prior information, current MTD, and current data. 
 #'
-#' @usage findbeds(mtd, n.eff, n.assign, a.pEff, b.pEff, E.min, gain.A, gain.AC, phi, lo)
+#' @usage dose_escalation(d, a.pTox, b.pTox, target, alpha, eta)
 #'
 #' @param d the current dose combination
 #' @param a.pTox parameter alpha for current prior distribution
 #' @param b.pTox parameter beta for current prior distribution
+#' @param target the target toxicity level
 #' @param alpha penalty term if the current DLT probability is below the target DLT probability
 #' @param eta penalty term if the current DLT probability is above the target DLT probability
 #' 
@@ -16,7 +17,7 @@
 #'
 #' @return \code{dose_escalation()} returns the indexes of next dose allocation
 #'
-#' @seealso Fan, S. K., Lee, B. L. and Lu, Y.: A Curve-free Bayesian Decision-theoretic Design for Phase Ia/Ib Trials Considering both Safety and Efficacy Outcomes. \emph{Statistics in Biosciences}, \textbf{12(2)}, 146-166 (2020). \url{https://doi.org/10.1007/s12561-020-09272-5}
+#' @seealso Fan, S. K., Lee, B. L. and Lu, Y.: A Curve-free Bayesian Decision-theoretic Design for Phase Ia/Ib Trials Considering both Safety and Efficacy Outcomes. Statistics in Biosciences, 12(2), 146-166 (2020). \url{https://doi.org/10.1007/s12561-020-09272-5}
 #'
 #' @export
 

@@ -220,13 +220,12 @@ shinyServer(
       df_table2 = data.frame(n = res_FLW$n,
                              percentFound = res_FLW$percentFound,
                              percentCorrect = res_FLW$percentCorrect,
-                             success = res_FLW$percentSuccess,
                              toxicity = res_FLW$percentTox)
       output$table2_FLW <- renderDT({
         datatable(df_table2, 
                   class = 'cell-border compact stripe', 
                   rownames = FALSE, 
-                  colnames = c("n", "%found", "%correct", "%success", "%toxicity"),
+                  colnames = c("n", "%found", "%correct", "%toxicity"),
                   options = list(dom = 't', ordering = FALSE))
       })
       
@@ -273,8 +272,7 @@ shinyServer(
           column(12,
                  align="center",
                  HTML("<strong>Table 2: The average sample size (\\(\\bar{n}\\)), the percentage of trials that recommend MTD (\\(\\%found\\)),
-                                         within the trials recommending MTD, the percentage that the recommended dose is truely acceptable (\\(\\%correct\\)),
-                                         and the percentage that sample pooled toxicity of the MTD is acceptable (\\(\\%sucess\\)), and the percentages of in-trial toxicity (\\(\\%toxicity\\)) under the proposed FLW Algorithm"),
+                                         within the trials recommending MTD, the percentage that the recommended dose is truely acceptable (\\(\\%correct\\)), and the percentages of in-trial toxicity (\\(\\%toxicity\\)) under the proposed FLW Algorithm"),
                  DTOutput("table2_FLW"),
                  ),
         ),
@@ -813,7 +811,7 @@ shinyServer(
     })
     output$prior_2agents <- renderUI ({
       matrixInput(inputId = "prior_2agents_input",
-                  label = strong("Enter the prior mean of DLT rates into the table below (optional)"),
+                  label = strong("Enter the prior mean of DLT rates into the table below"),
                   value = matrix(rep(NA, input$doseLevel1_2agents*input$doseLevel2_2agents),
                                  nrow = input$doseLevel1_2agents,
                                  ncol = input$doseLevel2_2agents,

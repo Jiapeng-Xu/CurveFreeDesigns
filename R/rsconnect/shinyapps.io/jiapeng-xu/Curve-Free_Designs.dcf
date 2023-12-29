@@ -4,8 +4,8 @@ username: jiapeng-xu
 account: jiapeng-xu
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
-appId: 10847320
-bundleId: 8086351
+appId: 10850145
+bundleId: 8090935
 url: https://jiapeng-xu.shinyapps.io/Curve-Free_Designs/
 version: 1
 asMultiple: FALSE

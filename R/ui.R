@@ -25,12 +25,12 @@ shinyUI(
                       fluidPage(
                         fluidRow(
                           align = 'center',
-                          h5(strong("Developed by ----")),
+                          h5(strong("Developed by Shenghuan Fan, Bee Leng Lee, Ying Lu, and Jiapeng Xu")),
                         ),
                         br(),
                         br(),
                         wellPanel(
-                          align = 'center',
+                          align = 'left',
                           HTML("This interactive web application is used to computes the exact operating characteristics of the proposed designs under user-defined scenarios.
                                The application has a simple graphical user interface (GUI), where the user specifies scenario parameters and hyperparameters to control the set-up of the trial. 
                                The scenario parameters to be specified contain the number of dose levels of each agent, the true probabilities of DLT for each dose, the target toxicity rate, etc.
@@ -38,7 +38,33 @@ shinyUI(
                                The hyperparameters include the effective sample size in the beta prior distribution, the magnitude of penalty/reward in the utility function, and minimum probability to conclude, etc. 
                                After these parameters have been specified, clicking the \textit{\textbf{Get operating characteristics}} button will begin the computations and display the results in a new output tab, 
                                which contains the scenario used in the current setting, tabulated operating characteristics, and informative plots."),
-                        )
+                          
+                          
+                          
+                        ),
+                        br(),
+                        br(),
+                        br(),
+                        br(),
+                        hr(style = "border-top: 0.5px solid #000000; border-color: gray; width: 120px; margin-left: 0;"),
+                        br(),
+                        HTML("<strong>Authors Information:</strong> <br>
+                               <br>
+                               Shenghua Fan <br>
+                               Department of Statistics and Biostatistics, California State University at East Bay, Hayward, 94542, CA, USA <br>
+                               e-mail: kelly.fan@csueastbay.edu <br>
+                               <br>
+                               Bee Leng Lee <br>
+                               Department of Mathematics and Statistics, San Jose State University, San Jose, 95192, CA, USA <br>
+                               e-mail: beeleng.lee@sjsu.edu <br>
+                               <br>
+                               Ying Lu <br>
+                               Department of Biomedical Data Science, Center for Innovative Study Designs and the Biostatistics Core, Stanfrod Cancer Insistute, School of Medicine, Stanford University, Stanford, 94305, CA, USA <br>
+                               e-mail: ylu1@stanford.edu <br>
+                               <br>
+                               Jiapeng Xu (Maintainer)<br>
+                               Department of Biomedical Data Science, Center for Innovative Study Designs and the Biostatistics Core, Stanfrod Cancer Insistute, School of Medicine, Stanford University, Stanford, 94305, CA, USA <br>
+                               e-mail: jiapeng@stanford.edu <a href=mailto:jiapeng@stanford.edu>Send email</a>"),
                         
                       )
                       
@@ -183,7 +209,7 @@ shinyUI(
              )),
              navbarMenu("Maximum Tolerated Dose in Two-Agent Trials", icon = icon("chart-line", verify_fa = FALSE),
                         #------------------------------------------ Two-stage Rule-Based Design -------------------------------------
-                        tabPanel("Two-Stage Rule-Based Design", icon = icon("chart-line", verify_fa = FALSE),
+                        tabPanel("Data-Driven 2+1+3 Design", icon = icon("chart-line", verify_fa = FALSE),
                                  tabsetPanel(
                                    type = 'pills',
                                    tabPanel(title = "Simulation Study",
@@ -295,7 +321,7 @@ shinyUI(
                         ),
                         
                         #------------------------------------------ A Rule-Based Design for Agents with Nonoverlapping Dose-Limiting Toxicities -------------------------------------
-                        tabPanel("A Rule-Based Design for Agents with Nonoverlapping Dose-Limiting Toxicities", icon = icon("chart-line", verify_fa = FALSE),
+                        tabPanel("Safety-Driven A+B+C Design", icon = icon("chart-line", verify_fa = FALSE),
                                  tabsetPanel(type = 'pills',
                                              tabPanel(
                                                title = "Simulation Study",
@@ -406,7 +432,7 @@ shinyUI(
                         ),
                         
                         #------------------------------------------ Bayesian Decision-Theoretic Design -------------------------------------
-                        tabPanel("Bayesian Decision-Theoretic Design", icon = icon("chart-line", verify_fa = FALSE),
+                        tabPanel("Two Dimentional Curve-Free Bayesian Adaptive Design", icon = icon("chart-line", verify_fa = FALSE),
                                  tabsetPanel(
                                    type = 'pills',
                                    tabPanel(
